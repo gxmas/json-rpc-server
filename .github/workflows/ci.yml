@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: GHC ${{ matrix.ghc }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ghc: "9.8.4"
+            cabal: "3.10"
+          - ghc: "9.10.1"
+            cabal: "3.12"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: haskell-actions/setup@v2
+        with:
+          ghc-version: ${{ matrix.ghc }}
+          cabal-version: ${{ matrix.cabal }}
+
+      - name: Cache cabal store
+        uses: actions/cache@v4
+        with:
+          path: ~/.cabal/store
+          key: ${{ runner.os }}-ghc-${{ matrix.ghc }}-${{ hashFiles('*.cabal', 'cabal.project.ci') }}
+          restore-keys: |
+            ${{ runner.os }}-ghc-${{ matrix.ghc }}-
+
+      - name: Update package index
+        run: cabal update
+
+      - name: Build
+        run: cabal build --project-file=cabal.project.ci
+
+      - name: Test
+        run: cabal test --project-file=cabal.project.ci --enable-tests --test-show-details=direct
+
+      - name: Haddock
+        run: cabal haddock --project-file=cabal.project.ci

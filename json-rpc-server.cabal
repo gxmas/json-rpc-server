@@ -1,0 +1,63 @@
+cabal-version:   3.0
+name:            json-rpc-server
+version:         0.1.0.0
+synopsis:        JSON-RPC 2.0 server with pure dispatch and applicative parameter parsing
+description:
+  A pure, declarative JSON-RPC 2.0 server. Build an immutable dispatch
+  table, handle messages, and let the type system enforce protocol
+  correctness. Handlers are effect-polymorphic via @MonadThrow@/@MonadCatch@
+  from the @exceptions@ package.
+
+license:         BSD-3-Clause
+author:          Your Name
+maintainer:      you@example.com
+category:        Network
+build-type:      Simple
+
+library
+  default-language: GHC2021
+  hs-source-dirs:   src
+  default-extensions: LambdaCase
+  ghc-options:
+    -Wall -Wcompat -Wincomplete-record-updates
+    -Wincomplete-uni-patterns -Wredundant-constraints
+
+  exposed-modules:
+    Network.JsonRpc.Server
+    Network.JsonRpc.Server.Internal
+    Network.JsonRpc.Server.ParamParser
+
+  build-depends:
+      base                  >= 4.16  && < 4.22
+    , json-rpc-core
+    , aeson                 >= 2.0   && < 2.3
+    , bytestring            >= 0.11  && < 0.13
+    , exceptions            >= 0.10  && < 0.11
+    , text                  >= 2.0   && < 2.2
+    , unordered-containers  >= 0.2.16 && < 0.3
+    , vector                >= 0.12  && < 0.14
+
+test-suite json-rpc-server-test
+  type:             exitcode-stdio-1.0
+  default-language: GHC2021
+  hs-source-dirs:   test
+  main-is:          Spec.hs
+  ghc-options:      -Wall -threaded -rtsopts -with-rtsopts=-N
+
+  other-modules:
+    Test.Network.JsonRpc.ServerSpec
+    Test.Network.JsonRpc.ParamParserSpec
+
+  build-depends:
+      base
+    , json-rpc-core
+    , json-rpc-server
+    , aeson
+    , bytestring
+    , hspec                >= 2.9   && < 2.12
+    , QuickCheck           >= 2.14  && < 2.16
+    , text
+    , unordered-containers
+
+  build-tool-depends:
+    hspec-discover:hspec-discover

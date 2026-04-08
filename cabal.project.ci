@@ -1,0 +1,6 @@
+packages: .
+
+source-repository-package
+  type: git
+  location: git@github.com:gxmas/json-rpc-core.git
+  tag: c4e94febad296737f529965739290ce3b61fb82d
